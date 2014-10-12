@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController 
+@interface ViewController : UIViewController {
+    double myDouble;
+}
 
 @property (strong, nonatomic) IBOutlet UILabel *labelVerbrauchInMB;
 @property (strong, nonatomic) IBOutlet UILabel *labelVerbrauch;

@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "WebserviceController.h"
+#import "BackgroundLayer.h"
 
 @interface ViewController ()
 
@@ -21,6 +22,11 @@
     UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
     [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
     
+    
+    CAGradientLayer *bgLayer = [BackgroundLayer blueGradient];
+    bgLayer.frame = self.view.bounds;
+    [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
+    [self.view.layer insertSublayer:bgLayer atIndex:0];
 }
 
 -(BOOL)UserDefaults {
@@ -58,6 +64,7 @@
         self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
     }
     [self datenVerbrauchHolen];
+  
 }
 
 -(void)saveUserDefaults:(NSString*)verbrauch mitDerZeit:(NSString*)mitDerZeit undDemProzent:(NSNumber*)undDemProzent undDemVerbrauchInMB:(NSString*)undDemVerbrauchInMb abrechnungszeitraum:(NSString*)abrechnungszeitraum verbleibendezeit:(NSString*)verbleibendezeit datenvolumen:(NSString*)datenvolumen geschwindigkeit:(NSString*)geschwindigkeit {
@@ -166,9 +173,12 @@
     labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
     
     
-    double myDouble = [labelProzentScratch doubleValue];
+    myDouble = [labelProzentScratch doubleValue];
     myDouble = myDouble / 100;
     self.progressBar.progress = myDouble;
+    
+    
+    
     
     if(![labelVerbrauchScratch isEqualToString:@""]) {
         
@@ -182,6 +192,24 @@
         self.labelKeinEmpfang.text = @"";
         
         [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
+        
+        CALayer* layer = [self.view.layer valueForKey:@"GradientLayer"];
+        [layer removeFromSuperlayer];
+        [self.view.layer setValue:nil forKey:@"GradientLayer"];
+        
+        if(myDouble <= 0.5) {
+            CAGradientLayer *bgLayer = [BackgroundLayer greenGradient];
+            bgLayer.frame = self.view.bounds;
+            [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
+            [self.view.layer insertSublayer:bgLayer atIndex:0];
+            NSLog(@"greenGradient");
+        } else {
+            CAGradientLayer *bgLayer = [BackgroundLayer redGradient];
+            bgLayer.frame = self.view.bounds;
+            [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
+            [self.view.layer insertSublayer:bgLayer atIndex:0];
+            NSLog(@"redGradient");
+        }
         
         [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
     
@@ -197,7 +225,25 @@
         self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
         self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
         self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
-        self.labelKeinEmpfang.text = @"Keine Verbindung zum Server";
+        CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+        animation.keyPath = @"position.x";
+        animation.values = @[ @0, @10, @-10, @10, @0 ];
+        animation.keyTimes = @[ @0, @(1 / 6.0), @(3 / 6.0), @(5 / 6.0), @1 ];
+        animation.duration = 0.4;
+        
+        animation.additive = YES;
+        
+        
+        [self.labelKeinEmpfang.layer addAnimation:animation forKey:@"position.x"];
+        
+        
+        self.labelKeinEmpfang.text = @"Keine Verbindung zum Server!";
+        CAGradientLayer *bgLayer = [BackgroundLayer blueGradient];
+        bgLayer.frame = self.view.bounds;
+        [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
+        [self.view.layer insertSublayer:bgLayer atIndex:0];
+        
+        
     }
 
 }

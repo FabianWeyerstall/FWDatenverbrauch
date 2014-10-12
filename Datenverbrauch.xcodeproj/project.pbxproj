@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		DE6024C819EACBB400B72DBD /* WebserviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6024C719EACBB400B72DBD /* WebserviceController.m */; };
 		DE6024CD19EAD0EA00B72DBD /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6024CC19EAD0EA00B72DBD /* SystemConfiguration.framework */; };
+		DE6024D019EB115800B72DBD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6024CF19EB115800B72DBD /* QuartzCore.framework */; };
+		DE6024D319EB11A300B72DBD /* BackgroundLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DE6024D219EB11A300B72DBD /* BackgroundLayer.m */; };
+		DE6024D519EB134A00B72DBD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6024D419EB134A00B72DBD /* UIKit.framework */; };
+		DE6024D719EB135900B72DBD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6024D619EB135900B72DBD /* CoreGraphics.framework */; };
 		DEE0DC7119DFD9E30018A90A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE0DC7019DFD9E30018A90A /* main.m */; };
 		DEE0DC7419DFD9E30018A90A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE0DC7319DFD9E30018A90A /* AppDelegate.m */; };
 		DEE0DC7719DFD9E30018A90A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE0DC7619DFD9E30018A90A /* ViewController.m */; };
@@ -65,6 +69,11 @@
 		DE6024C619EACBB400B72DBD /* WebserviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebserviceController.h; sourceTree = "<group>"; };
 		DE6024C719EACBB400B72DBD /* WebserviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebserviceController.m; sourceTree = "<group>"; };
 		DE6024CC19EAD0EA00B72DBD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		DE6024CF19EB115800B72DBD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		DE6024D119EB11A200B72DBD /* BackgroundLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundLayer.h; sourceTree = "<group>"; };
+		DE6024D219EB11A300B72DBD /* BackgroundLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundLayer.m; sourceTree = "<group>"; };
+		DE6024D419EB134A00B72DBD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DE6024D619EB135900B72DBD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		DEE0DC6B19DFD9E30018A90A /* Datenverbrauch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Datenverbrauch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEE0DC6F19DFD9E30018A90A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEE0DC7019DFD9E30018A90A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -92,6 +101,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE6024D719EB135900B72DBD /* CoreGraphics.framework in Frameworks */,
+				DE6024D519EB134A00B72DBD /* UIKit.framework in Frameworks */,
+				DE6024D019EB115800B72DBD /* QuartzCore.framework in Frameworks */,
 				DE6024CD19EAD0EA00B72DBD /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -156,6 +168,8 @@
 				DEE0DC7B19DFD9E30018A90A /* Images.xcassets */,
 				DEE0DC7D19DFD9E30018A90A /* LaunchScreen.xib */,
 				DEE0DC6E19DFD9E30018A90A /* Supporting Files */,
+				DE6024D119EB11A200B72DBD /* BackgroundLayer.h */,
+				DE6024D219EB11A300B72DBD /* BackgroundLayer.m */,
 			);
 			path = Datenverbrauch;
 			sourceTree = "<group>";
@@ -189,6 +203,9 @@
 		DEE0DD1619E022190018A90A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DE6024D619EB135900B72DBD /* CoreGraphics.framework */,
+				DE6024D419EB134A00B72DBD /* UIKit.framework */,
+				DE6024CF19EB115800B72DBD /* QuartzCore.framework */,
 				DE6024CC19EAD0EA00B72DBD /* SystemConfiguration.framework */,
 				DEE0DD1719E022190018A90A /* NotificationCenter.framework */,
 			);
@@ -366,6 +383,7 @@
 				DE6024C819EACBB400B72DBD /* WebserviceController.m in Sources */,
 				DEE0DC7719DFD9E30018A90A /* ViewController.m in Sources */,
 				DEE0DC7419DFD9E30018A90A /* AppDelegate.m in Sources */,
+				DE6024D319EB11A300B72DBD /* BackgroundLayer.m in Sources */,
 				DEE0DC7119DFD9E30018A90A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

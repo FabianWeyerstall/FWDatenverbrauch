@@ -21,8 +21,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    self.preferredContentSize = CGSizeMake(320, 60);
-    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+   self.preferredContentSize = CGSizeMake(320, 60);
+   self.view.translatesAutoresizingMaskIntoConstraints = NO;
+
 }
 
 
@@ -115,7 +116,7 @@
         self.labelVerbrauchWidget.text = [defaults objectForKey:@"verbrauch"];
         self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
         self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
-        self.progressBar.progress = 0.0;
+        //self.progressBar.progress = 0.0;
     }
     
     if (e != nil)
