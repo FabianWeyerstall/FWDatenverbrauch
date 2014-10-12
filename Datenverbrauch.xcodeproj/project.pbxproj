@@ -129,6 +129,8 @@
 		DE6024CE19EB0F9700B72DBD /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DE6024D119EB11A200B72DBD /* BackgroundLayer.h */,
+				DE6024D219EB11A300B72DBD /* BackgroundLayer.m */,
 				DE6024C619EACBB400B72DBD /* WebserviceController.h */,
 				DE6024C719EACBB400B72DBD /* WebserviceController.m */,
 			);
@@ -168,8 +170,6 @@
 				DEE0DC7B19DFD9E30018A90A /* Images.xcassets */,
 				DEE0DC7D19DFD9E30018A90A /* LaunchScreen.xib */,
 				DEE0DC6E19DFD9E30018A90A /* Supporting Files */,
-				DE6024D119EB11A200B72DBD /* BackgroundLayer.h */,
-				DE6024D219EB11A300B72DBD /* BackgroundLayer.m */,
 			);
 			path = Datenverbrauch;
 			sourceTree = "<group>";
