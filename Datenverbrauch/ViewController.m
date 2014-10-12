@@ -1,0 +1,327 @@
+//
+//  ViewController.m
+//  Datenverbrauch
+//
+//  Created by Fabian Weyerstall on 04.10.14.
+//  Copyright (c) 2014 Fabian Weyerstall. All rights reserved.
+//
+
+#import "ViewController.h"
+#import "WebserviceController.h"
+
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    
+}
+
+-(BOOL)UserDefaults {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([[defaults objectForKey:@"verbrauch"] isEqualToString:@""]) {
+        NSLog(@"loaddefaults True");
+        return true;
+    }
+    else {
+        NSLog(@"loaddefaults false");
+        return false;
+    }
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    if ([self UserDefaults] == false) {
+        NSLog(@"loaddefaults viewdidload false");
+        self.labelVerbrauchInMB.text = @"N/A";
+        self.labelVerbrauch.text = @"N/A";
+        self.labelAbrechnungszeitraum.text = @"N/A";
+        self.labelVerbleibendezeit.text = @"N/A";
+        self.labelDatenvolumen.text = @"N/A";
+        self.labelGeschwindigkeit.text = @"N/A";
+        self.labelTimestamp.text = @"N/A";
+    } else {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSLog(@"loaddefaults viewdidload True");
+        self.labelVerbrauch.text = [defaults objectForKey:@"verbrauch"];
+        self.labelVerbrauchInMB.text = [defaults objectForKey:@"undDemVerbrauchInMB"];
+        self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
+        self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
+        self.labelAbrechnungszeitraum.text = [defaults objectForKey:@"abrechnungszeitraum"];
+        self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
+        self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
+        self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
+    }
+    [self datenVerbrauchHolen];
+}
+
+-(void)saveUserDefaults:(NSString*)verbrauch mitDerZeit:(NSString*)mitDerZeit undDemProzent:(NSNumber*)undDemProzent undDemVerbrauchInMB:(NSString*)undDemVerbrauchInMb abrechnungszeitraum:(NSString*)abrechnungszeitraum verbleibendezeit:(NSString*)verbleibendezeit datenvolumen:(NSString*)datenvolumen geschwindigkeit:(NSString*)geschwindigkeit {
+   
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:mitDerZeit forKey:@"zeit"];
+    [defaults setObject:verbrauch forKey:@"verbrauch"];
+    [defaults setObject:undDemProzent forKey:@"prozent"];
+    [defaults setObject:undDemVerbrauchInMb forKey:@"undDemVerbrauchInMB"];
+    [defaults setObject:abrechnungszeitraum forKey:@"abrechnungszeitraum"];
+    [defaults setObject:verbleibendezeit forKey:@"verbleibendezeit"];
+    [defaults setObject:datenvolumen forKey:@"datenvolumen"];
+    [defaults setObject:geschwindigkeit forKey:@"geschwindigkeit"];
+   
+    NSLog(@"savedDefaults");
+    [defaults synchronize];
+}
+
+
++ (NSString *)scanString:(NSString *)string
+                startTag:(NSString *)startTag
+                  endTag:(NSString *)endTag
+{
+    
+    NSString* scanString = @"";
+    
+    if (string.length > 0) {
+        
+        NSScanner* scanner = [[NSScanner alloc] initWithString:string];
+        
+        @try {
+            [scanner scanUpToString:startTag intoString:nil];
+            scanner.scanLocation += [startTag length];
+            [scanner scanUpToString:endTag intoString:&scanString];
+        }
+        @catch (NSException *exception) {
+            return nil;
+        }
+        @finally {
+            return scanString;
+        }
+        
+    }
+    
+    return scanString;
+    
+}
+
+
+
+-(void) datenVerbrauchHolen
+
+{
+     NSURL *url = [NSURL URLWithString: @"http://pass.telekom.de/home?continue=true"];
+    // create webservice instance with success and failed function
+    WebserviceController* connectionController = [[WebserviceController alloc] initWithDelegate:self selSucceeded:@selector(connectionSucceeded:) selFailed:@selector(connectionFailed:)];
+    
+    [connectionController startRequestForURL:url andUsername:nil andPassword:nil];
+ 
+    
+}
+
+
+
+
+
+
+// called if webservice call was successfull
+- (void)connectionSucceeded:(NSData *)d {
+    
+    
+    NSString *htmlContent = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
+    
+    htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
+                                                         withString:@""];
+    
+    NSDate* currentDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    [dateFormatter setDateFormat:@"dd.MM - HH:mm:ss"];
+    NSString *line = [NSString stringWithFormat:@"%@", [dateFormatter stringFromDate:currentDate]];
+    
+    
+    NSString *labelVerbrauchinMBScratch = [ViewController scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
+    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
+    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@" "];
+    NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
+    
+    
+    NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
+    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
+    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+    
+    NSString *labelAbrechnungszeitraumScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue billingPeriod>" endTag:@"</td>"];
+    
+    NSString *labelVerbleibendezeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue remainingTime>" endTag:@"</td>"];
+    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"<span class=value>" withString:@""];
+    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+    
+    NSString *labelDatenvolumenScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue totalVolume>" endTag:@"</td>"];
+    
+    NSString *labelGeschwindigkeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue maxBandwidth>" endTag:@"</td>"];
+    
+    NSString *labelProzentScratch = [ViewController scanString:htmlContent startTag:@"<div class=progressBar>" endTag:@"</div>"];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
+    
+    
+    double myDouble = [labelProzentScratch doubleValue];
+    myDouble = myDouble / 100;
+    self.progressBar.progress = myDouble;
+    
+    if(![labelVerbrauchScratch isEqualToString:@""]) {
+        
+        self.labelVerbrauchInMB.text = labelVerbrauchinMBScratch;
+        self.labelVerbrauch.text = labelVerbrauchScratch;
+        self.labelAbrechnungszeitraum.text = labelAbrechnungszeitraumScratch;
+        self.labelVerbleibendezeit.text = labelVerbleibendezeitScratch;
+        self.labelDatenvolumen.text = labelDatenvolumenScratch;
+        self.labelGeschwindigkeit.text = labelGeschwindigkeitScratch;
+        self.labelTimestamp.text = line;
+        self.labelKeinEmpfang.text = @"";
+        
+        [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
+        
+        [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
+    
+    } else
+    {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        
+        self.labelVerbrauch.text = [defaults objectForKey:@"verbrauch"];
+        self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
+        self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
+        self.labelVerbrauchInMB.text = [defaults objectForKey:@"undDemVerbrauchInMB"];
+        self.labelAbrechnungszeitraum.text = [defaults objectForKey:@"abrechnungszeitraum"];
+        self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
+        self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
+        self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
+        self.labelKeinEmpfang.text = @"Keine Verbindung zum Server";
+    }
+
+}
+
+// called if webservice call has failed
+- (void)connectionFailed:(NSError *)error {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];   
+    self.labelVerbrauch.text = [defaults objectForKey:@"verbrauch"];
+    self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
+    self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
+    self.labelVerbrauchInMB.text = [defaults objectForKey:@"undDemVerbrauchInMB"];
+    self.labelAbrechnungszeitraum.text = [defaults objectForKey:@"abrechnungszeitraum"];
+    self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
+    self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
+    self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
+}
+
+
+
+
+
+
+
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)update:(id)sender {
+    [self datenVerbrauchHolen];
+}
+
+
+//- (void) datenVerbrauchHolen
+//{
+//
+//    NSError *e = nil;
+//
+//    NSURL *url = [NSURL URLWithString: @"http://pass.telekom.de/home?continue=true"];
+//
+//    NSData *d = [[NSData alloc] initWithContentsOfURL: url
+//                                              options: NSDataReadingUncached
+//                                                error: &e];
+//
+//    if (e != nil) // Primitive Error Handling
+//    {
+//        NSLog(@"Fetch error %@", e);
+//
+//    }
+//
+//    e = nil;
+//    NSString *htmlContent = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
+//
+//    htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
+//                                                         withString:@""];
+//
+//    NSDate* currentDate = [NSDate date];
+//    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+//    [dateFormatter setDateFormat:@"dd.MM - HH:mm:ss"];
+//    NSString *line = [NSString stringWithFormat:@"%@", [dateFormatter stringFromDate:currentDate]];
+//
+//
+//    NSString *labelVerbrauchinMBScratch = [ViewController scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
+//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
+//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@" "];
+//    NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
+//
+//
+//    NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
+//    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
+//    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+//
+//    NSString *labelAbrechnungszeitraumScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue billingPeriod>" endTag:@"</td>"];
+//
+//    NSString *labelVerbleibendezeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue remainingTime>" endTag:@"</td>"];
+//    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"<span class=value>" withString:@""];
+//    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+//
+//    NSString *labelDatenvolumenScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue totalVolume>" endTag:@"</td>"];
+//
+//    NSString *labelGeschwindigkeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue maxBandwidth>" endTag:@"</td>"];
+//
+//    NSString *labelProzentScratch = [ViewController scanString:htmlContent startTag:@"<div class=progressBar>" endTag:@"</div>"];
+//    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
+//    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
+//
+//
+//    double myDouble = [labelProzentScratch doubleValue];
+//    myDouble = myDouble / 100;
+//    self.progressBar.progress = myDouble;
+//
+//    if(![labelVerbrauchScratch isEqualToString:@""]) {
+//
+//        self.labelVerbrauchInMB.text = labelVerbrauchinMBScratch;
+//        self.labelVerbrauch.text = labelVerbrauchScratch;
+//        self.labelAbrechnungszeitraum.text = labelAbrechnungszeitraumScratch;
+//        self.labelVerbleibendezeit.text = labelVerbleibendezeitScratch;
+//        self.labelDatenvolumen.text = labelDatenvolumenScratch;
+//        self.labelGeschwindigkeit.text = labelGeschwindigkeitScratch;
+//        self.labelTimestamp.text = line;
+//
+//        [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
+//
+//        [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
+//    } else {
+//        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//
+//        self.labelVerbrauch.text = [defaults objectForKey:@"verbrauch"];
+//        self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
+//        self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
+//        self.labelVerbrauchInMB.text = [defaults objectForKey:@"undDemVerbrauchInMB"];
+//        self.labelAbrechnungszeitraum.text = [defaults objectForKey:@"abrechnungszeitraum"];
+//        self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
+//        self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
+//        self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
+//    }
+//
+//    if (e != nil)
+//    {
+//        NSLog(@"Parse error %@", e);
+//    }
+//    NSLog(@"Verbrauch: %@", labelVerbrauchinMBScratch);
+//}
+
+@end
