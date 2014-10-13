@@ -6,7 +6,7 @@ Datenverbrauchsanzeige für iOS8
 Anzeige des Datenverbrauchs für Telekom Complete Tarife.
 Für Anpassung URL ändern und z.b. per Firebug die Tags heraussuchen für eigenen Provider.
 
-Datenverbrauch wird im TotdayWidget, als Badge und in der App angezeigt.
+Datenverbrauch wird im TodayWidget, als Badge und in der App angezeigt.
 Zusätzlich kann eine Notification bei einem Update gesendet werden.
 
 Die App aktualisiert sich anhand der Benutzung von alleine,
