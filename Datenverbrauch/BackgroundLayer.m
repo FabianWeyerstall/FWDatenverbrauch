@@ -75,5 +75,26 @@
     return headerLayer;
 }
 
+//Orange gradient background
++ (CAGradientLayer*) orangeGradient {
+    
+    //// Color Declarations
+    //// Color Declarations
+    UIColor* colorOne = [UIColor colorWithRed: 0.886 green: 0.295 blue: 0 alpha: 1];
+    UIColor* colorTwo = [UIColor colorWithRed: 0.429 green: 0.143 blue: 0 alpha: 1];
+    NSArray *colors = [NSArray arrayWithObjects:(id)colorOne.CGColor, colorTwo.CGColor, nil];
+    
+    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
+    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
+    
+    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
+    
+    CAGradientLayer *headerLayer = [CAGradientLayer layer];
+    headerLayer.colors = colors;
+    headerLayer.locations = locations;
+    
+    return headerLayer;
+}
+
 
 @end

@@ -124,7 +124,9 @@
     WebserviceController* connectionController = [[WebserviceController alloc] initWithDelegate:self selSucceeded:@selector(connectionSucceeded:) selFailed:@selector(connectionFailed:)];
     
     [connectionController startRequestForURL:url andUsername:nil andPassword:nil];
- 
+    self.spinner.hidden = NO;
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    
     
 }
 
@@ -141,6 +143,7 @@
     
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
                                                          withString:@""];
+   // NSLog(@"%@", htmlContent);
     
     NSDate* currentDate = [NSDate date];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -153,10 +156,24 @@
     labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@" "];
     NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
     
+    NSString *labelProzentScratch = [ViewController scanString:htmlContent startTag:@"<div class=progressBar>" endTag:@"</div>"];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
+    
+    
+    myDouble = [labelProzentScratch doubleValue];
+    myDouble = myDouble / 100;
+    self.progressBar.progress = myDouble;
+    
+    //<div class=barTextBelow color_default><span class=colored>579,18 MB</span> von 2 GB mit voller Geschwindigkeit verbraucht
+    
     
     NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+   NSString* labelVerbrauchScratchN = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@" mit voller Geschwindigkeit verbraucht" withString:@""];
+    labelVerbrauchScratchN = [NSString stringWithFormat:@"%@ - %@%%", labelVerbrauchScratchN, labelProzentScratch];
+    
     
     NSString *labelAbrechnungszeitraumScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue billingPeriod>" endTag:@"</td>"];
     
@@ -168,22 +185,12 @@
     
     NSString *labelGeschwindigkeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue maxBandwidth>" endTag:@"</td>"];
     
-    NSString *labelProzentScratch = [ViewController scanString:htmlContent startTag:@"<div class=progressBar>" endTag:@"</div>"];
-    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
-    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
-    
-    
-    myDouble = [labelProzentScratch doubleValue];
-    myDouble = myDouble / 100;
-    self.progressBar.progress = myDouble;
-    
-    
     
     
     if(![labelVerbrauchScratch isEqualToString:@""]) {
         
         self.labelVerbrauchInMB.text = labelVerbrauchinMBScratch;
-        self.labelVerbrauch.text = labelVerbrauchScratch;
+        self.labelVerbrauch.text = labelVerbrauchScratchN;
         self.labelAbrechnungszeitraum.text = labelAbrechnungszeitraumScratch;
         self.labelVerbleibendezeit.text = labelVerbleibendezeitScratch;
         self.labelDatenvolumen.text = labelDatenvolumenScratch;
@@ -191,19 +198,25 @@
         self.labelTimestamp.text = line;
         self.labelKeinEmpfang.text = @"";
         
-        [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
+        [self saveUserDefaults:labelVerbrauchScratchN mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
         
         CALayer* layer = [self.view.layer valueForKey:@"GradientLayer"];
         [layer removeFromSuperlayer];
         [self.view.layer setValue:nil forKey:@"GradientLayer"];
         
-        if(myDouble <= 0.5) {
+        if(myDouble <= 0.4) {
             CAGradientLayer *bgLayer = [BackgroundLayer greenGradient];
             bgLayer.frame = self.view.bounds;
             [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
             [self.view.layer insertSublayer:bgLayer atIndex:0];
             NSLog(@"greenGradient");
-        } else {
+        } else if(myDouble <= 0.7) {
+            CAGradientLayer *bgLayer = [BackgroundLayer orangeGradient];
+            bgLayer.frame = self.view.bounds;
+            [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
+            [self.view.layer insertSublayer:bgLayer atIndex:0];
+            NSLog(@"redGradient");
+        }else {
             CAGradientLayer *bgLayer = [BackgroundLayer redGradient];
             bgLayer.frame = self.view.bounds;
             [self.view.layer setValue:bgLayer forKey:@"GradientLayer"];
@@ -245,6 +258,8 @@
         
         
     }
+    self.spinner.hidden = YES;
+    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
 
 }
 
@@ -259,6 +274,8 @@
     self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
     self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
     self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
+       self.spinner.hidden = YES;
+    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
 }
 
 

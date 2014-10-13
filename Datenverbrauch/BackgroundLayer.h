@@ -11,10 +11,10 @@
 
 @interface BackgroundLayer : NSObject
 
-+(CAGradientLayer*) greyGradient;
 +(CAGradientLayer*) blueGradient;
 +(CAGradientLayer*) redGradient;
 +(CAGradientLayer*) greenGradient;
++(CAGradientLayer*) orangeGradient;
 
 @end
 

@@ -21,6 +21,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *labelTimestamp;
 @property (strong, nonatomic) IBOutlet UIProgressView *progressBar;
 @property (strong, nonatomic) IBOutlet UILabel *labelKeinEmpfang;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *spinner;
 
 -(IBAction)update:(id)sender;
 -(void)datenVerbrauchHolen;

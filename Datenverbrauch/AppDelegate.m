@@ -81,6 +81,22 @@
     
 }
 
+-(void)saveUserDefaults:(NSString*)verbrauch mitDerZeit:(NSString*)mitDerZeit undDemProzent:(NSNumber*)undDemProzent undDemVerbrauchInMB:(NSString*)undDemVerbrauchInMb abrechnungszeitraum:(NSString*)abrechnungszeitraum verbleibendezeit:(NSString*)verbleibendezeit datenvolumen:(NSString*)datenvolumen geschwindigkeit:(NSString*)geschwindigkeit {
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:mitDerZeit forKey:@"zeit"];
+    [defaults setObject:verbrauch forKey:@"verbrauch"];
+    [defaults setObject:undDemProzent forKey:@"prozent"];
+    [defaults setObject:undDemVerbrauchInMb forKey:@"undDemVerbrauchInMB"];
+    [defaults setObject:abrechnungszeitraum forKey:@"abrechnungszeitraum"];
+    [defaults setObject:verbleibendezeit forKey:@"verbleibendezeit"];
+    [defaults setObject:datenvolumen forKey:@"datenvolumen"];
+    [defaults setObject:geschwindigkeit forKey:@"geschwindigkeit"];
+    
+    NSLog(@"savedDefaults");
+    [defaults synchronize];
+}
 
 - (void) application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
@@ -106,10 +122,48 @@
     
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
                                                          withString:@""];
-    NSString *labelVerbrauchinMBScratch = [AppDelegate scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
+//    NSString *labelVerbrauchinMBScratch = [AppDelegate scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
+//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
+//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@""];
+//    NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
+//    
+
+    
+    NSDate* currentDate = [NSDate date];
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    [dateFormatter setDateFormat:@"dd.MM - HH:mm:ss"];
+    NSString *line = [NSString stringWithFormat:@"%@", [dateFormatter stringFromDate:currentDate]];
+    
+    
+    NSString *labelVerbrauchinMBScratch = [ViewController scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
     labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
-    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@""];
+    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@" "];
     NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
+    
+    NSString *labelProzentScratch = [ViewController scanString:htmlContent startTag:@"<div class=progressBar>" endTag:@"</div>"];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
+    labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
+    
+
+    NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
+    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
+    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+    labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@" mit voller Geschwindigkeit verbraucht" withString:@""];
+    labelVerbrauchScratch = [NSString stringWithFormat:@"%@ (%@%%)", labelVerbrauchScratch, labelProzentScratch];
+    
+    
+    NSString *labelAbrechnungszeitraumScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue billingPeriod>" endTag:@"</td>"];
+    
+    NSString *labelVerbleibendezeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue remainingTime>" endTag:@"</td>"];
+    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"<span class=value>" withString:@""];
+    labelVerbleibendezeitScratch = [labelVerbleibendezeitScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
+    
+    NSString *labelDatenvolumenScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue totalVolume>" endTag:@"</td>"];
+    
+    NSString *labelGeschwindigkeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue maxBandwidth>" endTag:@"</td>"];
+    
+
+    
     
     if (e != nil)
     {
@@ -123,21 +177,24 @@
     if(![labelVerbrauchinMBScratchN intValue] == 0) {
         
         [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
+        [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
         
         // fire Notification
         UILocalNotification *note = [[UILocalNotification alloc] init];
         NSString *alter = [NSString stringWithFormat:@"Neuer Verbrauch: %@", labelVerbrauchinMBScratch];
         [note setAlertBody:alter];
         [[UIApplication sharedApplication] scheduleLocalNotification: note];
+           completionHandler (UIBackgroundFetchResultNewData);
     } else {
         // fire Notification
         UILocalNotification *note = [[UILocalNotification alloc] init];
         NSString *alter = [NSString stringWithFormat:@"Daten konnten nicht aktualisiert werden!"];
         [note setAlertBody:alter];
         [[UIApplication sharedApplication] scheduleLocalNotification: note];
+        completionHandler (UIBackgroundFetchResultFailed);
     }
     // call Completition Handler
-    completionHandler (UIBackgroundFetchResultNewData);
+ 
 }
 
 @end
