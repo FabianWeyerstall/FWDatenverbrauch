@@ -10,8 +10,8 @@ Datenverbrauch wird im TotdayWidget, als Badge und in der App angezeigt.
 Zusätzlich kann eine Notification bei einem Update gesendet werden.
 
 Die App aktualisiert sich anhand der Benutzung von alleine,
-kann aber über den Aktualiseren-Button aktualsiert werden.
-Verbrauchsdaten werden bei zwischengespeichert wenn keine Verbindung per 3G aufgebaut werden kann.
+kann aber über den Aktualisieren-Button aktualisiert werden.
+Verbrauchsdaten werden zwischengespeichert, wenn keine Verbindung per 3G aufgebaut werden kann.
 
 
 Version 1.0
