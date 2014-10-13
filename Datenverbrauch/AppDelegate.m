@@ -23,6 +23,9 @@
     // Override point for customization after application launch.
     [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
+    // Notification versenden
+    notification = false;
+    
     return YES;
 }
 
@@ -122,12 +125,12 @@
     
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
                                                          withString:@""];
-//    NSString *labelVerbrauchinMBScratch = [AppDelegate scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
-//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
-//    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@""];
-//    NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
-//    
-
+    //    NSString *labelVerbrauchinMBScratch = [AppDelegate scanString:htmlContent startTag:@"<span class=colored>" endTag:@"</span>"];
+    //    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@"Â" withString:@""];
+    //    labelVerbrauchinMBScratch = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" " withString:@""];
+    //    NSString *labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratch stringByReplacingOccurrencesOfString:@" MB" withString:@""];
+    //
+    
     
     NSDate* currentDate = [NSDate date];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -144,7 +147,7 @@
     labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"<div class=indicator color_default style=width:" withString:@""];
     labelProzentScratch = [labelProzentScratch stringByReplacingOccurrencesOfString:@"%> " withString:@""];
     
-
+    
     NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
@@ -162,7 +165,7 @@
     
     NSString *labelGeschwindigkeitScratch = [ViewController scanString:htmlContent startTag:@"<td class=infoValue maxBandwidth>" endTag:@"</td>"];
     
-
+    
     
     
     if (e != nil)
@@ -180,21 +183,25 @@
         [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
         
         // fire Notification
-        UILocalNotification *note = [[UILocalNotification alloc] init];
-        NSString *alter = [NSString stringWithFormat:@"Neuer Verbrauch: %@", labelVerbrauchinMBScratch];
-        [note setAlertBody:alter];
-        [[UIApplication sharedApplication] scheduleLocalNotification: note];
-           completionHandler (UIBackgroundFetchResultNewData);
+        if (notification) {
+            UILocalNotification *note = [[UILocalNotification alloc] init];
+            NSString *alter = [NSString stringWithFormat:@"Neuer Verbrauch: %@", labelVerbrauchinMBScratch];
+            [note setAlertBody:alter];
+            [[UIApplication sharedApplication] scheduleLocalNotification: note];
+        }
+        completionHandler (UIBackgroundFetchResultNewData);
     } else {
         // fire Notification
-        UILocalNotification *note = [[UILocalNotification alloc] init];
-        NSString *alter = [NSString stringWithFormat:@"Daten konnten nicht aktualisiert werden!"];
-        [note setAlertBody:alter];
-        [[UIApplication sharedApplication] scheduleLocalNotification: note];
+        if (notification) {
+            UILocalNotification *note = [[UILocalNotification alloc] init];
+            NSString *alter = [NSString stringWithFormat:@"Daten konnten nicht aktualisiert werden!"];
+            [note setAlertBody:alter];
+            [[UIApplication sharedApplication] scheduleLocalNotification: note];
+        }
         completionHandler (UIBackgroundFetchResultFailed);
     }
     // call Completition Handler
- 
+    
 }
 
 @end

@@ -21,9 +21,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-   self.preferredContentSize = CGSizeMake(320, 60);
-   self.view.translatesAutoresizingMaskIntoConstraints = NO;
-
+    self.preferredContentSize = CGSizeMake(320, 60);
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
 }
 
 
@@ -83,7 +83,7 @@
     
     e = nil;
     NSString *htmlContent = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
-
+    
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     
     
@@ -152,7 +152,7 @@
     
     e = nil;
     NSString *htmlContent = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
- 
+    
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     
     

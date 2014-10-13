@@ -11,7 +11,7 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate>{
     
         double myDouble;
-    
+    bool notification;
 
 }
 @property (strong, nonatomic) UIWindow *window;

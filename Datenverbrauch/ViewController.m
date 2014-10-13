@@ -64,11 +64,11 @@
         self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
     }
     [self datenVerbrauchHolen];
-  
+    
 }
 
 -(void)saveUserDefaults:(NSString*)verbrauch mitDerZeit:(NSString*)mitDerZeit undDemProzent:(NSNumber*)undDemProzent undDemVerbrauchInMB:(NSString*)undDemVerbrauchInMb abrechnungszeitraum:(NSString*)abrechnungszeitraum verbleibendezeit:(NSString*)verbleibendezeit datenvolumen:(NSString*)datenvolumen geschwindigkeit:(NSString*)geschwindigkeit {
-   
+    
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     [defaults setObject:mitDerZeit forKey:@"zeit"];
@@ -79,7 +79,7 @@
     [defaults setObject:verbleibendezeit forKey:@"verbleibendezeit"];
     [defaults setObject:datenvolumen forKey:@"datenvolumen"];
     [defaults setObject:geschwindigkeit forKey:@"geschwindigkeit"];
-   
+    
     NSLog(@"savedDefaults");
     [defaults synchronize];
 }
@@ -119,7 +119,7 @@
 -(void) datenVerbrauchHolen
 
 {
-     NSURL *url = [NSURL URLWithString: @"http://pass.telekom.de/home?continue=true"];
+    NSURL *url = [NSURL URLWithString: @"http://pass.telekom.de/home?continue=true"];
     // create webservice instance with success and failed function
     WebserviceController* connectionController = [[WebserviceController alloc] initWithDelegate:self selSucceeded:@selector(connectionSucceeded:) selFailed:@selector(connectionFailed:)];
     
@@ -143,7 +143,7 @@
     
     htmlContent = [htmlContent stringByReplacingOccurrencesOfString:@"\""
                                                          withString:@""];
-   // NSLog(@"%@", htmlContent);
+    // NSLog(@"%@", htmlContent);
     
     NSDate* currentDate = [NSDate date];
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
@@ -171,7 +171,7 @@
     NSString *labelVerbrauchScratch = [ViewController scanString:htmlContent startTag:@"<div class=barTextBelow color_default>" endTag:@"</div>"];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"<span class=colored>" withString:@""];
     labelVerbrauchScratch = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@"</span>" withString:@""];
-   NSString* labelVerbrauchScratchN = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@" mit voller Geschwindigkeit verbraucht" withString:@""];
+    NSString* labelVerbrauchScratchN = [labelVerbrauchScratch stringByReplacingOccurrencesOfString:@" mit voller Geschwindigkeit verbraucht" withString:@""];
     labelVerbrauchScratchN = [NSString stringWithFormat:@"%@ - %@%%", labelVerbrauchScratchN, labelProzentScratch];
     
     
@@ -225,7 +225,7 @@
         }
         
         [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
-    
+        
     } else
     {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -260,12 +260,12 @@
     }
     self.spinner.hidden = YES;
     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-
+    
 }
 
 // called if webservice call has failed
 - (void)connectionFailed:(NSError *)error {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];   
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.labelVerbrauch.text = [defaults objectForKey:@"verbrauch"];
     self.labelTimestamp.text = [defaults objectForKey:@"zeit"];
     self.progressBar.progress = [[defaults objectForKey:@"prozent"] doubleValue];
@@ -274,7 +274,7 @@
     self.labelVerbleibendezeit.text = [defaults objectForKey:@"verbleibendezeit"];
     self.labelDatenvolumen.text = [defaults objectForKey:@"datenvolumen"];
     self.labelGeschwindigkeit.text = [defaults objectForKey:@"geschwindigkeit"];
-       self.spinner.hidden = YES;
+    self.spinner.hidden = YES;
     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
 }
 

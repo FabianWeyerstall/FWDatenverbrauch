@@ -73,7 +73,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     //  NSString* newStr = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
     //results = receivedData;
-
+    
     // call success method with result
     [self.connectionDelegate performSelector:self.succeededAction withObject:receivedData];
     
