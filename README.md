@@ -3,8 +3,8 @@ FWDatenverbrauch
 
 Datenverbrauchsanzeige für iOS8
 
-Anzeige des Datenverbrauchs für Telekom Complete Tarife
-Für Anpassung URL ändern und z.b. per Firebug die Tags herraussuchen für eigenen Provider.
+Anzeige des Datenverbrauchs für Telekom Complete Tarife.
+Für Anpassung URL ändern und z.b. per Firebug die Tags heraussuchen für eigenen Provider.
 
 Datenverbrauch wird im TotdayWidget, als Badge und in der App angezeigt.
 Zusätzlich kann eine Notification bei einem Update gesendet werden.
@@ -21,5 +21,11 @@ Bis 70 Prozent Datenverbrauch
 Bis 100 Prozent Datenverbrauch
 ![alt tag](http://weyerstall.de/Datenverbrauch/DatenVerbrauchBis100Prozent.png)
 
-DatenVerbrauchWidget.png
+DatenverbrauchWidget
+![alt tag](http://weyerstall.de/Datenverbrauch/DatenVerbrauchWidget.png)
+
+Datenverbrauch per Badge
+![alt tag](http://weyerstall.de/Datenverbrauch/DatenVerbrauchBadge.png)
+
+Icons von http://iconmonstr.com
 
