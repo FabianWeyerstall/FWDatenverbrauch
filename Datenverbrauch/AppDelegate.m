@@ -183,6 +183,7 @@
         [self saveUserDefaults:labelVerbrauchScratch mitDerZeit:line undDemProzent:[NSNumber numberWithDouble:myDouble] undDemVerbrauchInMB:labelVerbrauchinMBScratch abrechnungszeitraum:labelAbrechnungszeitraumScratch verbleibendezeit:labelVerbleibendezeitScratch datenvolumen:labelDatenvolumenScratch geschwindigkeit:labelGeschwindigkeitScratch];
         
         // fire Notification
+        
         if (notification) {
             UILocalNotification *note = [[UILocalNotification alloc] init];
             NSString *alter = [NSString stringWithFormat:@"Neuer Verbrauch: %@", labelVerbrauchinMBScratch];
@@ -191,6 +192,7 @@
         }
         completionHandler (UIBackgroundFetchResultNewData);
     } else {
+        
         // fire Notification
         if (notification) {
             UILocalNotification *note = [[UILocalNotification alloc] init];
