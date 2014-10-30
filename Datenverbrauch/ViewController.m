@@ -223,8 +223,15 @@
             [self.view.layer insertSublayer:bgLayer atIndex:0];
             NSLog(@"redGradient");
         }
+      //  NSLog(@"%d",[string containsSubstring:@"hello"]);
+        if ([labelVerbrauchinMBScratchN containsString:@","]) {
+           labelVerbrauchinMBScratchN = [labelVerbrauchinMBScratchN stringByReplacingOccurrencesOfString:@"," withString:@""];
+            int labelVerbrauchinMBScratchNint = [labelVerbrauchinMBScratchN intValue] *10;
+            [UIApplication sharedApplication].applicationIconBadgeNumber = labelVerbrauchinMBScratchNint;
+        } else {
         
         [UIApplication sharedApplication].applicationIconBadgeNumber = [labelVerbrauchinMBScratchN intValue];
+        }
         
     } else
     {
